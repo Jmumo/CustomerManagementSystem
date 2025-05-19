@@ -1,103 +1,131 @@
-# Payment System Microservices
+# Customer Management System (CMS)
 
-This project is a microservices-based payment system built with Spring Boot and Java, comprising four services: **CardService**, **Customer and Accounts Service**, **Gateway**, and **Eureka Discovery**. These services work together to manage customers, accounts, and cards in a reactive architecture using Spring WebFlux.
+This is a microservices-based Customer Management System that handles customer onboarding and card management. The system is built using **Java 17**, **Spring Boot**, and **Docker**, and follows a reactive, scalable architecture.
 
-## Table of Contents
+---
 
-- [Project Overview](#project-overview)
-- [Services](#services)
-- [Technologies](#technologies)
-- [Prerequisites](#prerequisites)
-- [Setup and Running with Docker](#setup-and-running-with-docker)
-- [Test Data Setup](#test-data-setup)
-- [API Endpoints](#api-endpoints)
-- [Contributing](#contributing)
-- [License](#license)
+## 📦 Services
 
-## Project Overview
+The system is composed of the following services:
 
-This project implements a payment system using a microservices architecture. Each service is independently deployable and communicates via REST APIs. The services are registered with Eureka for service discovery, and the Gateway routes requests to the appropriate service.
+1. **Customer Service** – Manages customer data.
+2. **Account Service** – Handles customer bank accounts.
+3. **Card Service** – Manages cards linked to accounts.
+4. **Gateway Service** – API Gateway that routes requests to underlying services.
+5. **Eureka Discovery Service** – Service registry for microservices.
 
-- **CardService**: Manages card-related operations, such as creating and retrieving cards linked to accounts.
-- **Customer and Accounts Service**: Handles customer creation, account management, and linking accounts to customers.
-- **Gateway**: Acts as an API gateway, routing incoming requests to the appropriate microservice.
-- **Eureka Discovery**: Provides service discovery, enabling services to register and locate each other dynamically.
+---
 
-## Services
+## 🚀 Requirements
 
-### 1. CardService
-- **Functionality**: Manages card entities (e.g., credit/debit cards) and supports operations like creating cards and searching cards with pagination.
-- **Dependencies**: Requires an account's public ID to associate cards with accounts.
+- Java 17+
+- Docker
+- Docker Compose
 
-### 2. Customer and Accounts Service
-- **Functionality**: Manages customer profiles, account creation, and linking accounts to customers. Supports searching customers with pagination.
-- **Dependencies**: Links accounts to customers using the customer's public ID.
+---
 
-### 3. Gateway
-- **Functionality**: Serves as the entry point for all API requests, routing them to the appropriate microservice based on the URL path.
-- **Dependencies**: Integrates with Eureka for service discovery.
+## 🛠️ Setup and Running
 
-### 4. Eureka Discovery
-- **Functionality**: Provides a service registry for dynamic discovery of microservices, allowing services to find and communicate with each other.
-- **Dependencies**: Used by all services for registration and discovery.
+### 1. Clone the Repository
 
-## Technologies
-
-- **Java**: Version 17 or higher
-- **Spring Boot**: Version 3.4.5 (with WebFlux for reactive programming)
-- **Spring Cloud**: Eureka for service discovery and Gateway for API routing
-- **Docker**: For containerization of services
-- **Docker Compose**: For orchestration of multi-container setup
-- **PostgreSQL**: Database for Customer and Accounts Service and CardService
-- **MapStruct**: For mapping between entities and DTOs
-- **Lombok**: To reduce boilerplate code
-- **Maven**: Dependency management and build tool
-
-## Prerequisites
-
-Before running the project, ensure you have the following installed:
-
-- **Java 17 or higher**: [Download and install](https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html)
-- **Docker**: [Install Docker](https://docs.docker.com/get-docker/)
-- **Docker Compose**: [Install Docker Compose](https://docs.docker.com/compose/install/)
-- **Maven**: [Install Maven](https://maven.apache.org/install.html) (optional, if building without Docker)
-- A running PostgreSQL instance or use the one provided in the Docker Compose setup
-
-## Setup and Running with Docker
-
-Follow these steps to set up and run the services using Docker and Docker Compose:
-
-1. **Clone the Repository**:
-   ```bash
-   git clone <repository-url>
-   cd <repository-directory>
-
-
-
-   docker-compose up
-
-
-   ## 🌐 Service Access Points
-
-### Through API Gateway (Main Entry)
-All services are accessed via:  
-`http://localhost:7075/{service-path}`
-
-| Service          | Gateway Path   | Direct Port | Description                     |
-|------------------|----------------|-------------|---------------------------------|
-| **API Gateway**  | `/`            | 7075        | Main entry point                |
-| Customer Service | `/customer`    | 8081        | Manage customer data            |
-| Account Service  | `/accounts`    | 8082        | Handle accounts                 |
-| Card Service     | `/cards`       | 8083        | Manage payment cards            |
-| Eureka Dashboard | -              | 8761        | Service registry (`/eureka`)    |
-
-### Example Requests:
 ```bash
-# Create customer
-POST http://localhost:7075/customer
+git clone https://github.com/Jmumo/CustomerManagementSystem.git
+cd CustomerManagementSystem
+```
 
-# Get accounts 
-GET http://localhost:7075/accounts
+### 2. Build Docker Images
 
-# Issue new card
-POST http://localhost:7075/cards
+```bash
+docker compose build
+```
+
+### 3. Start the System
+
+```bash
+docker compose up
+```
+
+### 4. Stop the System
+
+```bash
+docker compose down
+```
+
+---
+
+## 🧪 Test Data Workflow
+
+Follow the steps below to manually test the application using `curl`.
+
+### Step 1: Create a Customer
+
+```bash
+curl -X POST http://localhost:8080/customers \
+  -H "Content-Type: application/json" \
+  -d '{
+        "firstName": "John",
+        "lastName": "Doe",
+        "email": "john.doe@example.com",
+        "phoneNumber": "0712345678"
+      }'
+```
+
+✅ *Response will contain the `publicId` of the created customer.*
+
+---
+
+### Step 2: Create an Account using Customer Public ID
+
+```bash
+curl -X POST http://localhost:8080/accounts \
+  -H "Content-Type: application/json" \
+  -d '{
+        "customerPublicId": "PASTE_CUSTOMER_PUBLIC_ID_HERE",
+        "accountType": "SAVINGS",
+        "currency": "KES"
+      }'
+```
+
+✅ *Response will contain the `publicId` of the created account.*
+
+---
+
+### Step 3: Create a Card using Account Public ID
+
+```bash
+curl -X POST http://localhost:8080/cards \
+  -H "Content-Type: application/json" \
+  -d '{
+        "accountPublicId": "PASTE_ACCOUNT_PUBLIC_ID_HERE",
+        "cardType": "VISA"
+      }'
+```
+
+✅ *Response will confirm that the card has been created and linked.*
+
+---
+
+## 🔎 API Documentation
+
+Once the system is running, you can view Swagger documentation (if enabled) at:
+
+```
+http://localhost:8080/swagger-ui.html
+```
+
+---
+
+## 🧩 Architecture Overview
+
+- Spring Boot Reactive Services
+- Eureka Discovery Service
+- Spring Cloud Gateway
+- PostgreSQL for persistent storage
+- Redis (optional, for caching or rate limiting)
+- Docker & Docker Compose for orchestration
+
+---
+
+## 📫 Contact
+
+For questions or contributions, feel free to reach out or open an issue.
