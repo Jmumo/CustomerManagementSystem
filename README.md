@@ -71,3 +71,33 @@ Follow these steps to set up and run the services using Docker and Docker Compos
    ```bash
    git clone <repository-url>
    cd <repository-directory>
+
+
+
+   docker-compose up
+
+
+   ## 🌐 Service Access Points
+
+### Through API Gateway (Main Entry)
+All services are accessed via:  
+`http://localhost:7075/{service-path}`
+
+| Service          | Gateway Path   | Direct Port | Description                     |
+|------------------|----------------|-------------|---------------------------------|
+| **API Gateway**  | `/`            | 7075        | Main entry point                |
+| Customer Service | `/customer`    | 8081        | Manage customer data            |
+| Account Service  | `/accounts`    | 8082        | Handle accounts                 |
+| Card Service     | `/cards`       | 8083        | Manage payment cards            |
+| Eureka Dashboard | -              | 8761        | Service registry (`/eureka`)    |
+
+### Example Requests:
+```bash
+# Create customer
+POST http://localhost:7075/customer
+
+# Get accounts 
+GET http://localhost:7075/accounts
+
+# Issue new card
+POST http://localhost:7075/cards
