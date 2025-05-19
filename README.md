@@ -105,15 +105,16 @@ curl -X POST http://localhost:8080/cards \
 
 ---
 
-## 🔎 API Documentation
-
-Once the system is running, you can view Swagger documentations (if enabled) at:
-
-CardsApis```
 
 
-http://localhost:7071/swagger-ui/webjars/swagger-ui/index.html#/
+## Individual Service Endpoints are At:
+
+CardsApi
+
+```bash
+  http://localhost:7071/swagger-ui/webjars/swagger-ui/index.html#/
 ```
+
 
 ---
 
