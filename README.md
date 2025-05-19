@@ -107,12 +107,25 @@ curl -X POST http://localhost:8080/cards \
 
 
 
+
 ## Individual Service Endpoints are At:
 
 CardsApi
 
 ```bash
   http://localhost:7071/swagger-ui/webjars/swagger-ui/index.html#/
+```
+
+CustomerApi
+
+```bash
+  http://localhost:7073/swagger-ui/webjars/swagger-ui/index.html#/
+```
+
+AccountsApi
+
+```bash
+  http://localhost:7072/swagger-ui/webjars/swagger-ui/index.html#/
 ```
 
 
