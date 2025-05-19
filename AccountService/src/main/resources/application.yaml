@@ -35,18 +35,11 @@ eureka:
 # SpringDoc configuration for OpenAPI and Swagger UI
 springdoc:
   api-docs:
-    path: /accounts/v3/api-docs
+    path: /v3/api-docs
   swagger-ui:
-    path: /accounts/swagger-ui.html
+    path: /swagger-ui/index.html
 
 
-
-# Optional OpenAPI metadata (not necessary, but informative)
-openapi:
-  service:
-    title: Account Service Documentation
-    version: 1.0.0
-    url: http://localhost:7072
 
 server:
   port: 7072

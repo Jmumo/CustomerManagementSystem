@@ -17,7 +17,7 @@ public class OpenApiConfig {
     public OpenAPI eventsServiceOpenAPI() {
         return new OpenAPI()
                 .info(new Info()
-                        .title("Accounts Service API")
+                        .title("Cards Service API")
                         .description("API for managing Customer accounts")
                         .version("v1.0.0")
                         .contact(new Contact()
