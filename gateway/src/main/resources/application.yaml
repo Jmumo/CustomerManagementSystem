@@ -1,0 +1,160 @@
+server:
+  port: 7075
+
+logging:
+  level:
+    org.springframework: DEBUG
+    org.springframework.cloud.gateway: TRACE
+    reactor.netty.http.client: DEBUG
+
+spring:
+  application:
+    name: GATEWAY-SERVICE
+
+  cloud:
+    gateway:
+      httpclient:
+        connect-timeout: 20000
+        response-timeout: 7s
+      default-filters:
+        - name: RequestRateLimiter
+          args:
+            key-resolver: "#{@ipKeyResolver}"
+            redis-rate-limiter.replenishRate: 5    # 5 requests per second
+            redis-rate-limiter.burstCapacity: 10    # max burst capacity
+            redis-rate-limiter.requestedTokens: 1   # tokens per request
+
+      routes:
+        - id: ACCOUNT-SERVICE
+          uri: lb://ACCOUNT-SERVICE
+          predicates:
+            - Path=/accounts/**, /accounts/swagger-ui/**, /accounts/v3/api-docs, /accounts/swagger-ui/webjars/swagger-ui/**
+
+
+        - id: CUSTOMER-SERVICE
+          uri: lb://CUSTOMER-SERVICE
+          predicates:
+            - Path=/customers/**, /customers/swagger-ui/**, /customers/v3/api-docs, /customers/swagger-ui/webjars/swagger-ui/**
+
+
+        - id: CARD-SERVICE
+          uri: lb://CARD-SERVICE
+          predicates:
+            - Path=/cards/**, /cards/swagger-ui/**, /cards/v3/api-docs, /cards/swagger-ui/webjars/swagger-ui/**
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+springdoc:
+  enable-native-support: true
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+    config-url: /v3/api-docs/swagger-config
+    urls:
+      - url: /v3/api-docs
+        name: API Gateway Service
+      - url: /accounts/v3/api-docs
+        name: Account Service
+      - url: /customers/v3/api-docs
+        name: Customer Service
+      - url: /cards/v3/api-docs
+        name: Card Service
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${random.value}
+
+
+
+
+#server:
+#  port: 7075
+#
+#logging:
+#  level:
+#    org.springframework: DEBUG
+#    org.springframework.cloud.gateway: TRACE
+#    reactor.netty.http.client: DEBUG
+#
+#spring:
+#  application:
+#    name: GATEWAY-SERVICE
+#
+#  cloud:
+#    gateway:
+#      httpclient:
+#        connect-timeout: 20000
+#        response-timeout: 7s
+#      default-filters:
+#        - name: RequestRateLimiter
+#          args:
+#            key-resolver: "#{@ipKeyResolver}"
+#            redis-rate-limiter.replenishRate: 5
+#            redis-rate-limiter.burstCapacity: 10
+#            redis-rate-limiter.requestedTokens: 1
+#
+#      routes:
+#        - id: ACCOUNT-SERVICE
+#          uri: lb://ACCOUNT-SERVICE
+#          predicates:
+#            - Path=/accounts/**
+#          filters:
+#            - RewritePath=/accounts/(?<segment>.*), /${segment}
+#
+#        - id: CUSTOMER-SERVICE
+#          uri: lb://CUSTOMER-SERVICE
+#          predicates:
+#            - Path=/customers/**
+#          filters:
+#            - RewritePath=/customers/(?<segment>.*), /${segment}
+#
+#        - id: CARD-SERVICE
+#          uri: lb://CARD-SERVICE
+#          predicates:
+#            - Path=/cards/**
+#          filters:
+#            - RewritePath=/cards/(?<segment>.*), /${segment}
+#
+#  data:
+#    redis:
+#      host: localhost
+#      port: 6379
+#
+#springdoc:
+#  enable-native-support: true
+#  api-docs:
+#    enabled: true
+#  swagger-ui:
+#    enabled: true
+#    path: /swagger-ui.html
+#    config-url: /v3/api-docs/swagger-config
+#    urls:
+#      - url: /v3/api-docs
+#        name: API Gateway Service
+#      - url: /accounts/v3/api-docs
+#        name: Account Service
+#      - url: /customers/v3/api-docs
+#        name: Customer Service
+#      - url: /cards/v3/api-docs
+#        name: Card Service
+#
+#eureka:
+#  client:
+#    service-url:
+#      defaultZone: http://localhost:8761/eureka/
+#    register-with-eureka: true
+#    fetch-registry: true
+#  instance:
+#    prefer-ip-address: true
+#    instance-id: ${spring.application.name}:${random.value}

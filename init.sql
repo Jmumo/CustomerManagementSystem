@@ -1,0 +1,3 @@
+CREATE SCHEMA IF NOT EXISTS customer_platform;
+
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";

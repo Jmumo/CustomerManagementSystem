@@ -1,0 +1,45 @@
+
+
+spring:
+  application:
+    name: CUSTOMER-SERVICE
+  jpa:
+    show-sql: false
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+        session_factory:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        globally_quoted_identifiers: true
+        default_schema: customer_platform
+  datasource:
+    url: jdbc:postgresql://localhost:5432/customer_platform
+    username: postgres
+    password: postgres
+    hikari:
+      minimum-idle: 2
+      maximum-pool-size: 5
+
+
+
+server:
+  port: 7073
+
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${random.value}
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui/index.html

@@ -1,0 +1,98 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: customer_platform
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
+
+  discovery-service:
+    build: ./Eureka
+    ports:
+      - "7074:7074"
+    depends_on:
+      - postgres
+      - redis
+    environment:
+      SPRING_PROFILES_ACTIVE: compose
+      SERVER_PORT: 7074
+      EUREKA_CLIENT_REGISTER_WITH_EUREKA: "false"
+      EUREKA_CLIENT_FETCH_REGISTRY: "false"
+
+  card-service:
+    build: ./CardService
+    ports:
+      - "7071:7071"
+    depends_on:
+      - postgres
+      - redis
+      - discovery-service
+    environment:
+      SPRING_PROFILES_ACTIVE: compose
+      SERVER_PORT: 7071
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/customer_platform
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      SPRING_REDIS_HOST: redis
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-service:7074/eureka/
+
+  customer-service:
+    build: ./CustomerService
+    ports:
+      - "7073:7073"
+    depends_on:
+      - postgres
+      - redis
+      - discovery-service
+    environment:
+      SPRING_PROFILES_ACTIVE: compose
+      SERVER_PORT: 7073
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/customer_platform
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      SPRING_REDIS_HOST: redis
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-service:7074/eureka/
+
+  account-service:
+    build: ./AccountService
+    ports:
+      - "7072:7072"
+    depends_on:
+      - postgres
+      - redis
+      - discovery-service
+    environment:
+      SPRING_PROFILES_ACTIVE: compose
+      SERVER_PORT: 7072
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/customer_platform
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      SPRING_REDIS_HOST: redis
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-service:7074/eureka/
+
+  gateway-service:
+    build: ./gateway
+    ports:
+      - "7075:7075"
+    depends_on:
+      - discovery-service
+      - redis
+    environment:
+      SPRING_PROFILES_ACTIVE: compose
+      SERVER_PORT: 7075
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-service:7074/eureka/
+
+volumes:
+  pgdata:

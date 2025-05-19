@@ -1,0 +1,56 @@
+
+
+spring:
+  application:
+    name: ACCOUNT-SERVICE
+  jpa:
+    show-sql: false
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        format_sql: true
+        session_factory:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        globally_quoted_identifiers: true
+        default_schema: customer_platform
+  datasource:
+    url: jdbc:postgresql://localhost:5432/customer_platform
+    username: postgres
+    password: postgres
+    hikari:
+      minimum-idle: 2
+      maximum-pool-size: 5
+
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${random.value}
+# SpringDoc configuration for OpenAPI and Swagger UI
+springdoc:
+  api-docs:
+    path: /accounts/v3/api-docs
+  swagger-ui:
+    path: /accounts/swagger-ui.html
+
+
+
+# Optional OpenAPI metadata (not necessary, but informative)
+openapi:
+  service:
+    title: Account Service Documentation
+    version: 1.0.0
+    url: http://localhost:7072
+
+server:
+  port: 7072
+
+
+app:
+  Base_Url: http://localhost:7075

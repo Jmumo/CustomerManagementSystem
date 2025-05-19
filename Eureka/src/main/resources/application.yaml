@@ -1,0 +1,38 @@
+server:
+  port: 7074
+
+eureka:
+  client:
+    register-with-eureka: false
+    fetch-registry: false
+    service-url:
+      defaultZone: http://discovery-service:7074/eureka/
+  instance:
+    hostname: discovery-service
+    prefer-ip-address: false
+    lease-renewal-interval-in-seconds: 10
+    lease-expiration-duration-in-seconds: 30
+
+  server:
+    enable-self-preservation: false
+    eviction-interval-timer-in-ms: 5000
+    response-cache-update-interval-ms: 5000
+
+spring:
+  application:
+    name: discovery-service
+  cloud:
+    inetutils:
+      ignored-interfaces: eth.*
+      preferred-networks: 172
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
+    info:
+      enabled: true
