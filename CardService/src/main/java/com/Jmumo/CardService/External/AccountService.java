@@ -1,6 +1,7 @@
 package com.Jmumo.CardService.External;
 
 import com.Jmumo.CardService.External.Dtos.AccountResponseDto;
+import com.Jmumo.CardService.config.AppProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -13,15 +14,20 @@ import java.util.UUID;
 @Slf4j
 @Service
 public class AccountService {
+
+    private final AppProperties appProperties;
     private final WebClient webClient;
 
-    public AccountService(WebClient webClient) {
+    public AccountService(AppProperties appProperties, WebClient webClient) {
+        this.appProperties = appProperties;
         this.webClient = webClient;
     }
 
     public Mono<AccountResponseDto> getAccountById(UUID accountId) {
         log.info("Get account by id: {}", accountId);
-        String url = String.format("http://localhost:7072/accounts/%s", accountId);
+
+
+        String url = String.format(appProperties.getBaseUrl()+"/accounts/%s", accountId);
 
         return webClient.get()
                 .uri(url)
